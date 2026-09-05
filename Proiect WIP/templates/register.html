@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <title>Înregistrare</title>
+</head>
+<body>
+<div class="content">
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}<p class="flash">{{ messages[0] }}</p>{% endif %}
+  {% endwith %}
+
+  <h1>Creează un cont</h1>
+  <form method="POST">
+    <label>Nume<input type="text" name="nume" required></label>
+    <label>Prenume<input type="text" name="prenume" required></label>
+    <label>Email<input type="email" name="email" required></label>
+    <label>Parolă<input type="password" name="password" required></label>
+    <label>Confirmati Parolă<input type="password" name="confirmed_password" required></label>
+    <label>Cod invitație<input type="text" name="cod_invitatie" required></label>
+    <button type="submit">Înregistrează-te</button>
+  </form>
+
+  <p>Ai deja cont? <a href="{{ url_for('login') }}">Autentifică-te</a></p>
+</div>
+</body>
+</html>
