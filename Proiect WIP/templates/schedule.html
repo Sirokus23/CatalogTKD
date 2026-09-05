@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <title>Program antrenamente</title>
+</head>
+<body>
+<div class="content">
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}<p class="flash">{{ messages[0] }}</p>{% endif %}
+  {% endwith %}
+
+  <h1>Program antrenamente</h1>
+
+  {% if user.role == 'antrenor' %}
+    <form method="POST">
+      <label>Data<input type="date" name="data" required></label>
+      <label>Ora<input type="text" name="ora" placeholder="ex: 18:00" required></label>
+      <label>Grupă
+        <select name="grupa_id">
+          <option value="">— toată echipa —</option>
+          {% for grupa in grupe %}
+            <option value="{{ grupa.id }}">{{ grupa.nume_grup }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <button type="submit">Adaugă sesiune</button>
+    </form>
+    <hr>
+  {% endif %}
+
+  <ul>
+    {% for sesiune in sesiuni %}
+      <li>
+        {{ sesiune.data.strftime('%d %b %Y') }} — {{ sesiune.ora }}
+        {% if sesiune.grupa %}({{ sesiune.grupa.nume_grup }}){% else %}(toată echipa){% endif %}
+        {% if user.role == 'antrenor' %}
+          {% if sesiune.user_id == user.id %}
+            <br><a href="{{ url_for('attendance', session_id=sesiune.id) }}">Marchează prezența</a>
+            <a href="{{ url_for('edita_sesiune', session_id=sesiune.id) }}">Editează</a>
+          {% endif %}
+        {% endif %}
+      </li>
+    {% else %}
+      <li>Nicio sesiune programată încă.</li>
+    {% endfor %}
+  </ul>
+
+  <a href="{{ url_for('dashboard') }}">Înapoi la dashboard</a>
+</div>
+</body>
+</html>

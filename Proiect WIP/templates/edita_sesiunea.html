@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editează sesiune de antrenament</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="form-container">
+        <h2>Editează sesiune de antrenament</h2>
+
+        <form method="POST">
+            <div class="form-group">
+                <label for="data">Data</label>
+                <input type="date" id="data" name="data"
+                       value="{{ sesiune.data.isoformat() }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="ora">Ora</label>
+                <input type="time" id="ora" name="ora"
+                       value="{{ sesiune.ora.strftime('%H:%M') }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="grupa_id">Grupă</label>
+                <select id="grupa_id" name="grupa_id">
+                    <option value="">Toată echipa</option>
+                    {% for grupa in grupe %}
+                    <option value="{{ grupa.id }}"
+                        {% if sesiune.grupa_id == grupa.id %}selected{% endif %}>
+                        {{ grupa.nume_grup }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="notite">Notițe</label>
+                <textarea id="notite" name="notite" rows="4">{{ sesiune.notite or '' }}</textarea>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Salvează</button>
+                <a href="{{ url_for('schedule') }}" class="btn btn-secondary">Anulează</a>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>
