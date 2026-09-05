@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <title>Echipa TKD</title>
+</head>
+<body>
+<div class="content" style="text-align: center; padding-top: 60px;">
+  <h1>Echipa TKD</h1>
+  <p>Program de antrenamente, prezență și plăți, într-un singur loc.</p>
+
+  <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 30px;">
+    <a href="{{ url_for('login') }}"><button style="width: 100%;">Log in</button></a>
+    <a href="{{ url_for('register') }}"><button style="width: 100%; background: white; color: #1a1a2e; border: 1px solid #1a1a2e;">Creează cont</button></a>
+  </div>
+</div>
+</body>
+<!-- </html> -->

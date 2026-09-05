@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <title>Echipă</title>
+</head>
+<body>
+<div class="content">
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}<p class="flash">{{ messages[0] }}</p>{% endif %}
+  {% endwith %}
+
+  <h1>Echipă</h1>
+
+  <h2>Grupe</h2>
+  <form method="POST">
+    <input type="text" name="nume_grupa_noua" placeholder="Nume grupă nouă" required>
+    <button type="submit">Adaugă grupă</button>
+  </form>
+
+  <ul>
+    {% for grupa in grupe %}
+      <li>
+        <form method="POST" style="flex-direction: row; gap: 8px;">
+          <input type="hidden" name="redenumeste_grupa_id" value="{{ grupa.id }}">
+          <input type="text" name="nume_nou" value="{{ grupa.nume_grup }}">
+          <button type="submit">Redenumește</button>
+        </form>
+        <form method="POST" action="{{ url_for('sterge_grupa', grupa_id=grupa.id) }}"
+              onsubmit="return confirm('Ștergi grupa {{ grupa.nume_grup }}?')">
+          <button type="submit">Șterge</button>
+        </form>
+      </li>
+    {% else %}
+      <li>Nicio grupă creată încă.</li>
+    {% endfor %}
+  </ul>
+
+  <hr>
+  <h2>Sportivi</h2>
+
+  <input type="text" id="cautare-sportiv" placeholder="Caută după nume..." onkeyup="filtreazaSportivi()">
+
+  <ul id="lista-sportivi">
+    {% for sportiv in sportivi %}
+      <li class="sportiv-item" data-nume="{{ (sportiv.prenume + ' ' + sportiv.nume) | lower }}">
+        {{ sportiv.prenume }} {{ sportiv.nume }}
+        <form method="POST">
+          <input type="hidden" name="sportiv_id" value="{{ sportiv.id }}">
+          <select name="grupa_id" onchange="this.form.submit()">
+            <option value="">— fără grupă —</option>
+            {% for grupa in grupe %}
+              <option value="{{ grupa.id }}" {% if sportiv.grupa_id == grupa.id %}selected{% endif %}>
+                {{ grupa.nume_grup }}
+              </option>
+            {% endfor %}
+          </select>
+        </form>
+      </li>
+    {% else %}
+      <li>Niciun sportiv înregistrat încă.</li>
+    {% endfor %}
+  </ul>
+
+  <a href="{{ url_for('dashboard') }}">Înapoi la dashboard</a>
+</div>
+
+<script>
+function filtreazaSportivi() {
+  const cautare = document.getElementById('cautare-sportiv').value.toLowerCase();
+  const itemi = document.querySelectorAll('#lista-sportivi .sportiv-item');
+
+  itemi.forEach(function(item) {
+    const nume = item.getAttribute('data-nume');
+    if (nume.includes(cautare)) {
+      item.style.display = '';
+    } else {
+      item.style.display = 'none';
+    }
+  });
+}
+</script>
+</body>
+</html>
