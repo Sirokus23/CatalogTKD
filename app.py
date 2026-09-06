@@ -186,6 +186,9 @@ def create_app():
     @login_required
     def schedule():
         if request.method == "POST":
+            if (current_user.role != 'antrenor'):
+                flash("Doar antrenor poate acces")
+                return redirect(url_for("schedule"))
             data = date.fromisoformat(request.form["data"])
             ora = time.fromisoformat(request.form["ora"])
             grupa_id = request.form.get("grupa_id")
@@ -259,6 +262,10 @@ def create_app():
     @login_required
     def payments():
         if request.method == "POST":
+            if (current_user.role != 'antrenor'):
+                flash("Doar antrenor poate acces")
+                return redirect(url_for("payments"))
+            
             user_id = int(request.form["user_id"])
             data_plata = date.fromisoformat(request.form["data_plata"])
             perioada = request.form["perioada"]
