@@ -102,17 +102,7 @@ def create_app():
 
     csrf.init_app(app)
     limiter.init_app(app)
-    Talisman(
-        app,
-        force_https=True,
-        strict_transport_security=True,
-        strict_transport_security_max_age=31536000,
-        content_security_policy={
-            'default-src': "'self'",
-            'script-src': ["'self'", "'unsafe-inline'"],
-            'style-src': ["'self'", "'unsafe-inline'"],
-        },
-    )
+    Talisman(app)
     mail = Mail(app)
     db.init_app(app)
 
