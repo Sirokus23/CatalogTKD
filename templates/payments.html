@@ -16,6 +16,7 @@
 
   {% if user.role == 'antrenor' %}
     <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <label>Sportiv
         <select name="user_id" required>
           {% for sportiv in sportivi %}

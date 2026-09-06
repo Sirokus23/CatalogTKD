@@ -15,6 +15,7 @@
   <h1>Prezență — {{ sesiune.data.strftime('%d %b %Y') }} ({{ sesiune.ora }})</h1>
 
   <form method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     {% for sportiv in sportivi %}
       <label style="flex-direction: row; align-items: center; gap: 8px;">
         <input type="checkbox" name="prezenta_{{ sportiv.id }}"

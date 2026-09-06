@@ -3,13 +3,22 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_mail import Mail, Message
+from flask_talisman import Talisman
+from flask_wtf.csrf import CSRFProtect
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from functools import wraps
 from datetime import date, time, timedelta, datetime
 import os
 import secrets
 from dotenv import load_dotenv
 
-
+"""Pe data de 06/09 la 8:45 PM
+    Am introdus urmatoarele masuri de securitate pentru aceasta aplicatie WEB:
+    Am adaugat header-uri de securitate folosind flask-talisman, am adaugat configurari de securizare a cookiuri-lor
+    Libraria flask-wtf pentru a proteja de Cross-Site Request Forger
+    Si am introdus rata de limitare pentru paginile login,register si reset password
+"""
 #Importurile necesare pentru realizarea acestuii proiects
 
 load_dotenv()
@@ -69,6 +78,11 @@ class Attendance(db.Model):
     session_id = db.Column(db.Integer, db.ForeignKey('training_session.id'))
     prezenta = db.Column(db.Boolean, default=False)
 
+csrf = CSRFProtect()
+limiter = Limiter(get_remote_address,
+                  default_limits=["200 per day", "50 per hour"]
+                  )
+
 def create_app():
     app = Flask(__name__)
     app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY") #seteaza o parola secreta
@@ -81,8 +95,14 @@ def create_app():
     app.config['MAIL_USE_TLS'] = True
     app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
     app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+    app.config['SESSION_COOKIE_SECURE'] = True
+    app.config['SESSION_COOKIE_HTTPONLY'] = True
+    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
     #Configurarile pentru aplicatie web
 
+    csrf.init_app(app)
+    limiter.init_app(app)
+    Talisman(app)
     mail = Mail(app)
     db.init_app(app)
 
@@ -99,6 +119,7 @@ def create_app():
         return render_template("index.html")
 
     @app.route("/register", methods=["GET", "POST"])
+    @limiter.limit("3 per hour")
     def register():
         if request.method == "POST":
             nume = request.form["nume"]
@@ -139,6 +160,7 @@ def create_app():
         return render_template("register.html")   #Generearea paginii html
 
     @app.route("/login", methods=["GET", "POST"])
+    @limiter.limit("5 per minute")
     def login():
         if request.method == "POST":
             email = request.form["email"]
@@ -317,6 +339,7 @@ def create_app():
         return render_template("forgot_password.html")
 
     @app.route("/reset-password/<token>", methods=["GET", "POST"])
+    @limiter.limit("3 per hour")
     def reset_password(token):
         utilizator = User.query.filter_by(reset_token=token).first()
 

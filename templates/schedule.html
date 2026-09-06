@@ -16,6 +16,7 @@
 
   {% if user.role == 'antrenor' %}
     <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <label>Data<input type="date" name="data" required></label>
       <label>Ora<input type="text" name="ora" placeholder="ex: 18:00" required></label>
       <label>Grupă

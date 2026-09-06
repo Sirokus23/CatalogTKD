@@ -20,6 +20,7 @@
         <h2>Editează sesiune de antrenament</h2>
 
         <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <div class="form-group">
                 <label for="data">Data</label>
                 <input type="date" id="data" name="data"
