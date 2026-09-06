@@ -103,40 +103,40 @@ def create_app():
         if request.method == "POST":
             nume = request.form["nume"]
             prenume = request.form["prenume"]
-            email = request.form["email"]
+            email = request.form["email"]                                   #Toate datele introduse de utilizator pe interfata web
             raw_password = request.form["password"]
             confirmed_password = request.form["confirmed_password"]
             cod_invitatie = request.form["cod_invitatie"]
 
             if cod_invitatie != app.config["COD_INVITATIE"]:
-                flash("Codul de invitație este incorect.", "error")
+                flash("Codul de invitație este incorect.", "error")         #Masura de securitate fiecare participant va avea acces la un cod care va prmite accesarea interfetei
                 return redirect(url_for("register"))
 
-            if not nume or not prenume or not email or not raw_password:
+            if not nume or not prenume or not email or not raw_password:    #Completarea obligatorie a tuturor cimpurilor necesare pentru inregistrare
                 flash("Toate câmpurile sunt obligatorii.", "error")
                 return redirect(url_for("register"))
 
-            if len(raw_password) < 8 or not any(char.isdigit() for char in raw_password) or not any(char.isupper() for char in raw_password):
+            if len(raw_password) < 8 or not any(char.isdigit() for char in raw_password) or not any(char.isupper() for char in raw_password):       #Verificare slaba la cit de puternica este parola ---> Posibile schimbari in viitor
                 flash("Parola trebuie să aibă cel puțin 8 caractere, să conțină cel puțin o literă mare și un număr.", "error")
                 return redirect(url_for("register"))
 
-            if User.query.filter_by(email=email).first():
+            if User.query.filter_by(email=email).first():           #Verificare daca posta electronica introdusa este deja inregistrata
                 flash("Email-ul există deja.", "error")
                 return redirect(url_for("register"))
 
             if raw_password != confirmed_password:
-                flash("Parolele nu coincid.", "error")
+                flash("Parolele nu coincid.", "error")          #Confirmarea parolei
                 return redirect(url_for("register"))
             parola_hash = generate_password_hash(raw_password)
 
-            utilizator_nou = User(nume=nume, prenume=prenume, email=email, password=parola_hash)
+            utilizator_nou = User(nume=nume, prenume=prenume, email=email, password=parola_hash) #Crearea utilizatorului nou inregistrat in baza de date
 
-            db.session.add(utilizator_nou)
+            db.session.add(utilizator_nou) #Adaugarea utilizatorului in baza de date.
             db.session.commit()
             flash("Înregistrare reușită! Te poți autentifica acum.", "success")
-            return redirect(url_for("login"))
+            return redirect(url_for("login"))   #redirectionarea
 
-        return render_template("register.html")
+        return render_template("register.html")   #Generearea paginii html
 
     @app.route("/login", methods=["GET", "POST"])
     def login():
